@@ -737,242 +737,243 @@ class personalWeb
                         </div>
                     </body>
 
-                <?php
-                $this->footer();
-            } else {
+                    <?php
+                    $this->footer();
+                } else {
+                }
             }
-        }
 
-        public function home()
-        {
-            $aboutData = $this->getAboutData($this->conn);
-            if ($aboutData !== null) {
-                foreach ($aboutData as $row) {
-            $this->header($row['name']);
-                ?>
-                <body class="font-sans mx-auto max-w-prose">
-                    <div class="pt-12 pb-4">
-                        <?php $this->navbar() ?>
-                        <div class="mx-auto text-center prose prose-indigo">
-                            <div>
-                                <img class="object-cover mx-auto h-36 w-36 rounded-full" src="assets\img\profile.jpg">
-                                <h1><?php echo $row['name'] ?></h1>
+            public function home()
+            {
+                $aboutData = $this->getAboutData($this->conn);
+                if ($aboutData !== null) {
+                    foreach ($aboutData as $row) {
+                        $this->header($row['name']);
+                    ?>
+
+                        <body class="font-sans mx-auto max-w-prose">
+                            <div class="pt-12 pb-4">
+                                <?php $this->navbar() ?>
+                                <div class="mx-auto text-center prose prose-indigo">
+                                    <div>
+                                        <img class="object-cover mx-auto h-36 w-36 rounded-full" src="assets\img\profile.jpg">
+                                        <h1><?php echo $row['name'] ?></h1>
+                                    </div>
+
+                                    <p class="text-gray-500 pb-4"><?php echo $row['hypertexthome'] ?></p>
+
+                                </div>
                             </div>
 
-                            <p class="text-gray-500 pb-4"><?php echo $row['hypertexthome'] ?></p>
+                    <?php
+                    }
+                }
+                    ?>
 
+                    <section>
+                        <div class="flex flex-wrap text-center">
+                            <div class="w-full pt-4">
+                                <div>
+                                    <?php
+                                    $linktreedata = $this->getLinktree($this->conn);
+                                    if ($linktreedata !== null) {
+                                        foreach ($linktreedata as $row) {
+                                    ?>
+                                            <a href="<?php echo $row['url'] ?>" target="_blank">
+                                                <button class="bg-white text-lightBlue-600 font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
+                                                    <i class="fab fa-<?php echo $row['platform_name'] ?>"></i>
+                                                </button>
+                                            </a>
+                                    <?php
+                                        }
+                                    }
+
+                                    ?>
+
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </section>
 
-            <?php
-                        }
-                    }
-            ?>
-
-            <section>
-                <div class="flex flex-wrap text-center">
-                    <div class="w-full pt-4">
-                        <div>
-                            <?php
-                            $linktreedata = $this->getLinktree($this->conn);
-                            if ($linktreedata !== null) {
-                                foreach ($linktreedata as $row) {
-                            ?>
-                                    <a href="<?php echo $row['url'] ?>" target="_blank">
-                                        <button class="bg-white text-lightBlue-600 font-normal h-10 w-10 items-center justify-center align-center rounded-full outline-none focus:outline-none mr-2" type="button">
-                                            <i class="fab fa-<?php echo $row['platform_name'] ?>"></i>
-                                        </button>
-                                    </a>
-                            <?php
-                                }
-                            }
-
-                            ?>
-
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-                </body>
-
-                <?php
-                $this->footer();
-            }
-
-            public function addBlog()
-            {
-
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $this->display_form('blog', '/addBlogHandle', 'add');
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function addBlogHandle()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                        $topic = $_POST['topic'];
-                        $docname = $_POST['docname'];
-                        $title = $_POST['title'];
-                        $shortdesc = $_POST['shortdesc'];
-                        $hypertext = $_POST['hypertext'];
-
-                        $sql = "INSERT INTO blogs (topic,docname,title,shortdesc, hypertext) VALUES (?, ?,?,?,?)";
-                        $stmt = mysqli_prepare($this->conn, $sql);
-                        mysqli_stmt_bind_param($stmt, "sssss", $topic, $docname, $title, $shortdesc, $hypertext);
-                        if (mysqli_stmt_execute($stmt)) {
-                            $this->returnToHome();
-                        } else {
-                            $this->returnToHome();
-                        }
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function addDoc()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $this->display_form('doc', 'addDocHandle', 'add');
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function addDocHandle()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'],  $this->getHashedPassword())) {
-
-                        $project = $_POST['project'];
-                        $docname = $_POST['docname'];
-                        $title = $_POST['title'];
-                        $shortdesc = $_POST['shortdesc'];
-                        $hypertext = $_POST['hypertext'];
-
-                        $sql = "INSERT INTO docs (project,docname,title,shortdesc, hypertext) VALUES (?, ?,?,?,?)";
-                        $stmt = mysqli_prepare($this->conn, $sql);
-                        mysqli_stmt_bind_param($stmt, "sssss", $project, $docname, $title, $shortdesc, $hypertext);
-                        if (mysqli_stmt_execute($stmt)) {
-                            $this->returnToHome();
-                        } else {
-                            $this->returnToHome();
-                        }
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function addImage()
-            {
-
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                ?>
-                        <!DOCTYPE html>
-                        <html lang="en">
-
-                        <head>
-                            <meta charset="UTF-8">
-                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                            <title>Image Upload Form</title>
-                        </head>
-
-                        <body>
-                            <h2>Image Upload</h2>
-                            <form action="/addImageHandle" method="post" enctype="multipart/form-data">
-                                <label for="image">Select Image:</label>
-                                <input type="file" name="image" id="image" accept="image/*">
-                                <br>
-                                <input type="submit" value="Upload">
-                            </form>
                         </body>
 
-                        </html>
-
-                <?php
-                    } else {
-                        $this->returnToHome();
+                        <?php
+                        $this->footer();
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
 
-            public function taglist()
-            {
-                $this->header('Tag');
-                ?>
+                    public function addBlog()
+                    {
 
-                <body class="font-sans mx-auto max-w-prose">
-                    <div class="pt-12 pb-4">
-                        <?php $this->navbar() ?>
-
-                        <div class="px-4 pt-4 prose prose-indigo">
-                            <h1 class="text-center mt-6 mb-6">Tags</h1>
-
-                            <?php
-                            $result = $this->getAllTags($this->conn);
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    $tagName = $row["tag_name"];
-                            ?>
-                                    <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                        <a class="!no-underline" href="<?php echo '/tag/' . $tagName; ?>">
-                                            <?php echo $tagName; ?>
-                                        </a>
-                                    </div>
-                            <?php
-                                }
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                                $this->display_form('blog', '/addBlogHandle', 'add');
+                            } else {
+                                $this->returnToHome();
                             }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
 
-                            ?>
-                        </div>
-                    </div>
-                </body>
+                    public function addBlogHandle()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                                $topic = $_POST['topic'];
+                                $docname = $_POST['docname'];
+                                $title = $_POST['title'];
+                                $shortdesc = $_POST['shortdesc'];
+                                $hypertext = $_POST['hypertext'];
+
+                                $sql = "INSERT INTO blogs (topic,docname,title,shortdesc, hypertext) VALUES (?, ?,?,?,?)";
+                                $stmt = mysqli_prepare($this->conn, $sql);
+                                mysqli_stmt_bind_param($stmt, "sssss", $topic, $docname, $title, $shortdesc, $hypertext);
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function addDoc()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                                $this->display_form('doc', 'addDocHandle', 'add');
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function addDocHandle()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'],  $this->getHashedPassword())) {
+
+                                $project = $_POST['project'];
+                                $docname = $_POST['docname'];
+                                $title = $_POST['title'];
+                                $shortdesc = $_POST['shortdesc'];
+                                $hypertext = $_POST['hypertext'];
+
+                                $sql = "INSERT INTO docs (project,docname,title,shortdesc, hypertext) VALUES (?, ?,?,?,?)";
+                                $stmt = mysqli_prepare($this->conn, $sql);
+                                mysqli_stmt_bind_param($stmt, "sssss", $project, $docname, $title, $shortdesc, $hypertext);
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function addImage()
+                    {
+
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                        ?>
+                                <!DOCTYPE html>
+                                <html lang="en">
+
+                                <head>
+                                    <meta charset="UTF-8">
+                                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                                    <title>Image Upload Form</title>
+                                </head>
+
+                                <body>
+                                    <h2>Image Upload</h2>
+                                    <form action="/addImageHandle" method="post" enctype="multipart/form-data">
+                                        <label for="image">Select Image:</label>
+                                        <input type="file" name="image" id="image" accept="image/*">
+                                        <br>
+                                        <input type="submit" value="Upload">
+                                    </form>
+                                </body>
+
+                                </html>
+
+                        <?php
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function taglist()
+                    {
+                        $this->header('Tag');
+                        ?>
+
+                        <body class="font-sans mx-auto max-w-prose">
+                            <div class="pt-12 pb-4">
+                                <?php $this->navbar() ?>
+
+                                <div class="px-4 pt-4 prose prose-indigo">
+                                    <h1 class="text-center mt-6 mb-6">Tags</h1>
+
+                                    <?php
+                                    $result = $this->getAllTags($this->conn);
+                                    if ($result->num_rows > 0) {
+                                        while ($row = $result->fetch_assoc()) {
+                                            $tagName = $row["tag_name"];
+                                    ?>
+                                            <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                <a class="!no-underline" href="<?php echo '/tag/' . $tagName; ?>">
+                                                    <?php echo $tagName; ?>
+                                                </a>
+                                            </div>
+                                    <?php
+                                        }
+                                    }
+
+                                    ?>
+                                </div>
+                            </div>
+                        </body>
 
 
-            <?php
-                $this->footer();
-            }
+                    <?php
+                        $this->footer();
+                    }
 
-            public function tag($tag)
-            {
-                $this->header('Tag Specify');
-            ?>
+                    public function tag($tag)
+                    {
+                        $this->header('Tag Specify');
+                    ?>
 
-                <body class="font-sans mx-auto max-w-prose">
-                    <div class="pt-12 pb-4">
+                        <body class="font-sans mx-auto max-w-prose">
+                            <div class="pt-12 pb-4">
 
-                        <?php $this->navbar() ?>
+                                <?php $this->navbar() ?>
 
-                        <div class="px-4 pt-4 prose prose-indigo">
-                            <h1 class="text-center mt-6 mb-6">
-                                <?php echo $tag; ?> Tag
-                            </h1>
+                                <div class="px-4 pt-4 prose prose-indigo">
+                                    <h1 class="text-center mt-6 mb-6">
+                                        <?php echo $tag; ?> Tag
+                                    </h1>
 
-                            <?php
+                                    <?php
 
 
-                            $sqlDocs = "SELECT d.project, d.shortdesc, d.created_at
+                                    $sqlDocs = "SELECT d.project, d.shortdesc, d.created_at
         FROM docs d
         JOIN doc_tags dt ON d.id = dt.doc_id
         JOIN tags t ON dt.tag_id = t.id
@@ -980,560 +981,563 @@ class personalWeb
         GROUP BY d.project, d.shortdesc, d.created_at;
         ";
 
-                            $resultDocs = $this->conn->query($sqlDocs);
+                                    $resultDocs = $this->conn->query($sqlDocs);
 
-                            if ($resultDocs) {
-                            ?>
-                                <?php
-                                while ($row = $resultDocs->fetch_assoc()) {
-                                ?>
-                                    <div class="pt-3.5">
-                                        <a class="!no-underline" href="../doc/<?php echo $row['project'] ?>">
-                                            <h3 class="text-sm text-gray-700">
-                                                <?php echo $row['project']; ?>
-                                                <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                    docs
-                                                </div>
-                                            </h3>
-                                        </a>
-                                        <p class="max-w-[40ch] text-xs text-gray-500">
-                                            <?php echo $row['shortdesc']; ?> <br> <br> <small class="text-gray-400">
-                                                <?php
-                                                $dateTime = new DateTime($row['created_at']);
-                                                $formattedDate = $dateTime->format('F j, Y');
-                                                echo $formattedDate; ?>
-                                            </small>
-                                        </p>
-                                    </div>
-                                <?php
-                                }
-                                ?>
-                            <?php
-                            }
+                                    if ($resultDocs) {
+                                    ?>
+                                        <?php
+                                        while ($row = $resultDocs->fetch_assoc()) {
+                                        ?>
+                                            <div class="pt-3.5">
+                                                <a class="!no-underline" href="../doc/<?php echo $row['project'] ?>">
+                                                    <h3 class="text-sm text-gray-700">
+                                                        <?php echo $row['project']; ?>
+                                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                            docs
+                                                        </div>
+                                                    </h3>
+                                                </a>
+                                                <p class="max-w-[40ch] text-xs text-gray-500">
+                                                    <?php echo $row['shortdesc']; ?> <br> <br> <small class="text-gray-400">
+                                                        <?php
+                                                        $dateTime = new DateTime($row['created_at']);
+                                                        $formattedDate = $dateTime->format('F j, Y');
+                                                        echo $formattedDate; ?>
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        <?php
+                                        }
+                                        ?>
+                                    <?php
+                                    }
 
-                            $sqlBlogs = "SELECT b.topic, b.shortdesc, b.created_at
+                                    $sqlBlogs = "SELECT b.topic, b.shortdesc, b.created_at
         FROM blogs b
         JOIN blog_tags bt ON b.id = bt.blog_id
         JOIN tags t ON bt.tag_id = t.id
         WHERE t.tag_name = '$tag'
         GROUP BY b.topic, b.shortdesc, b.created_at
         ";
-                            $resultBlogs = $this->conn->query($sqlBlogs);
-                            if ($resultBlogs) {
-                            ?>
-                                <?php
-                                while ($row = $resultBlogs->fetch_assoc()) {
-                                ?>
-                                    <div class="pt-3.5">
-                                        <a class="!no-underline" href="../blog/<?php echo $row['topic'] ?>">
-                                            <h3 class="text-sm text-gray-700">
-                                                <?php echo $row['topic']; ?>
-                                                <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
-                                                    blog
-                                                </div>
-                                            </h3>
-                                        </a>
-                                        <p class="max-w-[40ch] text-xs text-gray-500">
-                                            <?php echo $row['shortdesc']; ?> <br> <br> <small class="text-gray-400">
-                                                <?php
-                                                $dateTime = new DateTime($row['created_at']);
-                                                $formattedDate = $dateTime->format('F j, Y');
-                                                echo $formattedDate; ?>
-                                            </small>
-                                        </p>
-                                    </div>
-                                <?php
-                                }
-                                ?>
-                            <?php
-                            }
-                            ?>
-                        </div>
-
-                    </div>
-                </body>
-
-
-                <?php
-                $this->footer();
-            }
-
-            public function addImageHandle()
-            {
-                if ($_SERVER["REQUEST_METHOD"] == "POST") {
-                    if (isset($_FILES["image"]) && $_FILES["image"]["error"] == UPLOAD_ERR_OK) {
-                        $uploadDir = "assets/img/";
-                        if (!file_exists($uploadDir)) {
-                            mkdir($uploadDir, 0777, true);
-                        }
-                        $fileName = uniqid("image_") . "." . pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
-                        $targetPath = $uploadDir . $fileName;
-                        if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
-                            $this->returnToHome();
-                        } else {
-                            $this->returnToHome();
-                        }
-                    } else {
-                        $this->returnToHome();
-                    }
-                }
-            }
-
-            public function addTag()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                ?>
-                        <form action="/addTagHandle" method="post">
-                            <label for="tag_name">Tag Name:</label><br>
-                            <input type="text" id="tag_name" name="tag_name"><br><br>
-
-                            <input type="submit" value="Submit">
-                        </form>
-
-                <?php
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function addTagHandle()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $tag_name = $_POST['tag_name'];
-                        $sql = "INSERT INTO `tags` (`id`, `tag_name`) VALUES (NULL, ?);";
-                        $stmt = mysqli_prepare($this->conn, $sql);
-                        mysqli_stmt_bind_param($stmt, "s", $tag_name);
-                        if (mysqli_stmt_execute($stmt)) {
-                            $this->returnToHome();
-                        } else {
-                            $this->returnToHome();
-                        }
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function bootstrapHead($title)
-            {
-                ?>
-                <!DOCTYPE html>
-                <html lang="en">
-
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title><?php echo $title; ?></title>
-
-                    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-                    <script src="assets/js/tinymce.min.js"></script>
-
-                </head>
-                <?php
-            }
-
-            public function editLinktree()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $result = $this->getLinktree($this->conn);
-                    if ($result !== null && !empty($result)) {
-                        $this->bootstrapHead('Edit Linktree');
-                ?>
-                        <body>
-                            <div class="container">
-
-                                <form action="/editLinktreeHandle" method="post">
-                                    <?php
-                                    foreach ($result as $row) {
+                                    $resultBlogs = $this->conn->query($sqlBlogs);
+                                    if ($resultBlogs) {
                                     ?>
-                                        <input type="hidden" name="id<?php echo $row['id'] ?>" value="<?php echo $row['id'] ?>">
-                                        <label class="form-label" for="name">Platform <?php echo $row['id'] ?></label><br>
-                                        <select name="platform<?php echo $row['id'] ?>" class="form-select">
-                                            <option selected><?php echo $row['platform_name'] ?></option>
-                                            <option value="facebook">Facebook</option>
-                                            <option value="instagram">Instagram</option>
-                                            <option value="youtube">Youtube</option>
-                                            <option value="twitter">Twitter</option>
-                                        </select>
-                                        <input class="form-control" type="text" id="url<?php echo $row['id'] ?>" name="url<?php echo $row['id'] ?>" value="<?php echo $row['url'] ?>"><br>
-
+                                        <?php
+                                        while ($row = $resultBlogs->fetch_assoc()) {
+                                        ?>
+                                            <div class="pt-3.5">
+                                                <a class="!no-underline" href="../blog/<?php echo $row['topic'] ?>">
+                                                    <h3 class="text-sm text-gray-700">
+                                                        <?php echo $row['topic']; ?>
+                                                        <div class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                                                            blog
+                                                        </div>
+                                                    </h3>
+                                                </a>
+                                                <p class="max-w-[40ch] text-xs text-gray-500">
+                                                    <?php echo $row['shortdesc']; ?> <br> <br> <small class="text-gray-400">
+                                                        <?php
+                                                        $dateTime = new DateTime($row['created_at']);
+                                                        $formattedDate = $dateTime->format('F j, Y');
+                                                        echo $formattedDate; ?>
+                                                    </small>
+                                                </p>
+                                            </div>
+                                        <?php
+                                        }
+                                        ?>
                                     <?php
                                     }
                                     ?>
-                                    <input class="btn btn-dark" type="submit" value="Update">
-                                </form>
+                                </div>
 
                             </div>
                         </body>
 
-                </html><?php
-                    }
-                        ?>
 
-
-        <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function deleteAttachTag()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $getTagquery = "SELECT * FROM tags";
-                    $getTagresult = $this->conn->query($getTagquery);
-
-                    $getpostquery = "SELECT *, 'docs' AS source FROM docs
-                UNION
-                SELECT *, 'blog' AS source FROM blogs;
-                ";
-                    $getpostresult = $this->conn->query($getpostquery);
-        ?>
-            <form action="/deleteAttachTagHandle" method="POST">
-                <label for="tag_id">Choose Tag to attach</label><br>
-                <select name="tag_id">
-                    <?php
-                    while ($row = $getTagresult->fetch_assoc()) {
-                        echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
-                    }
-                    ?>
-                </select><br>
-
-                <label for="id_post">Choose Post to being attached</label><br>
-                <select name="id_post">
-                    <?php
-                    while ($row = $getpostresult->fetch_assoc()) {
-                        echo "<option value='" . $row['source'] . $row['id'] . "'>" . $row['source'] . ' ' . $row['project'] . "</option>";
-                    }
-                    ?>
-                </select><br>
-
-                <input type="submit" name="delete" value="Go">
-            </form>
-
-            <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function deleteAttachTagHandle()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                    $id_post = $_POST['id_post'];
-                    $tag_id = $_POST['tag_id'];
-
-                    $type = substr($id_post, 0, 4);
-                    $id = substr($id_post, 4);
-
-                    if ($type == 'docs') {
-                        $sql = "DELETE FROM `doc_tags` WHERE `doc_id` = ? AND `tag_id` = ?";
-                        $stmt = $this->conn->prepare($sql);
-                        $stmt->bind_param("ii", $id, $tag_id);
-                        $stmt->execute();
-                        $stmt->close();
-                        $this->returnToHome();
-                    } elseif ($type == 'blog') {
-                        $sql = "DELETE FROM `blog_tags` WHERE `blog_id` = ? AND `tag_id` = ?";
-                        $stmt = $this->conn->prepare($sql);
-                        $stmt->bind_param("ii", $id, $tag_id);
-                        $stmt->execute();
-                        $stmt->close();
-                        $this->returnToHome();
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function editLinktreeHandle()
-            {
-                $url1 = $_POST['url1'];
-                $url2 = $_POST['url2'];
-                $url3 = $_POST['url3'];
-                $url4 = $_POST['url4'];
-
-                $id1 = $_POST['id1'];
-                $id2 = $_POST['id2'];
-                $id3 = $_POST['id3'];
-                $id4 = $_POST['id4'];
-
-                $platform1 = $_POST['platform1'];
-                $platform2 = $_POST['platform2'];
-                $platform3 = $_POST['platform3'];
-                $platform4 = $_POST['platform4'];
-
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    // Updating the first record
-                    $query1 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
-                    $stmt1 = $this->conn->prepare($query1);
-                    $stmt1->bind_param("ssi", $platform1, $url1, $id1);
-                    $result1 = $stmt1->execute();
-
-                    // Updating the second record
-                    $query2 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
-                    $stmt2 = $this->conn->prepare($query2);
-                    $stmt2->bind_param("ssi", $platform2, $url2, $id2);
-                    $result2 = $stmt2->execute();
-
-                    // Updating the third record
-                    $query3 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
-                    $stmt3 = $this->conn->prepare($query3);
-                    $stmt3->bind_param("ssi", $platform3, $url3, $id3);
-                    $result3 = $stmt3->execute();
-
-                    // Updating the fourth record
-                    $query4 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
-                    $stmt4 = $this->conn->prepare($query4);
-                    $stmt4->bind_param("ssi", $platform4, $url4, $id4);
-                    $result4 = $stmt4->execute();
-                    $this->returnToHome();
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function attachTag()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $getTagquery = "SELECT * FROM tags";
-                        $getTagresult = $this->conn->query($getTagquery);
-                        $getpostquery = "SELECT *, 'docs' AS source FROM docs
-                UNION
-                SELECT *, 'blog' AS source FROM blogs;
-                ";
-                        $getpostresult = $this->conn->query($getpostquery);
-            ?>
-                <form action="/attachTagHandle" method="POST">
-                    <label for="tag_id">Choose Tag to attach</label><br>
-                    <select name="tag_id">
                         <?php
-                        while ($row = $getTagresult->fetch_assoc()) {
-                            echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
-                        }
-                        ?>
-                    </select><br>
+                        $this->footer();
+                    }
 
-                    <label for="id_post">Choose Post to being attached</label><br>
-                    <select name="id_post">
+                    public function addImageHandle()
+                    {
+                        if ($_SERVER["REQUEST_METHOD"] == "POST") {
+                            if (isset($_FILES["image"]) && $_FILES["image"]["error"] == UPLOAD_ERR_OK) {
+                                $uploadDir = "assets/img/";
+                                if (!file_exists($uploadDir)) {
+                                    mkdir($uploadDir, 0777, true);
+                                }
+                                $fileName = uniqid("image_") . "." . pathinfo($_FILES["image"]["name"], PATHINFO_EXTENSION);
+                                $targetPath = $uploadDir . $fileName;
+                                if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetPath)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        }
+                    }
+
+                    public function addTag()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                        ?>
+                                <form action="/addTagHandle" method="post">
+                                    <label for="tag_name">Tag Name:</label><br>
+                                    <input type="text" id="tag_name" name="tag_name"><br><br>
+
+                                    <input type="submit" value="Submit">
+                                </form>
+
                         <?php
-                        while ($row = $getpostresult->fetch_assoc()) {
-                            echo "<option value='" . $row['source'] . $row['id'] . "'>" . $row['source'] . ' ' . $row['project'] . "</option>";
-                        }
-                        ?>
-                    </select><br>
-                    <input type="submit" name="delete" value="Go">
-                </form>
-
-            <?php
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-            public function deleteTag()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $query = "SELECT * FROM tags";
-                    $result = $this->conn->query($query);
-            ?>
-            <form action="/deleteTagHandle" method="POST">
-                <label for="tag_id">Choose Blogs to Delete</label><br>
-                <select name="tag_id">
-                    <?php
-                    while ($row = $result->fetch_assoc()) {
-                        echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
-                    }
-                    ?>
-                </select>
-                <br>
-                <input type="submit" name="delete" value="Go">
-            </form>
-        <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-            public function deleteTagHandle()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    if (isset($_POST['delete'])) {
-                        $tag_id = $_POST['tag_id'];
-                        $delete_doc_tags_query = "DELETE FROM `doc_tags` WHERE `tag_id` = ?";
-                        $delete_doc_tags_stmt = $this->conn->prepare($delete_doc_tags_query);
-                        $delete_doc_tags_stmt->bind_param("i", $tag_id);
-                        $delete_doc_tags_stmt->execute();
-                        $delete_doc_tags_stmt->close();
-                        $delete_blog_tags_query = "DELETE FROM `blog_tags` WHERE `tag_id` = ?";
-                        $delete_blog_tags_stmt = $this->conn->prepare($delete_blog_tags_query);
-                        $delete_blog_tags_stmt->bind_param("i", $tag_id);
-                        $delete_blog_tags_stmt->execute();
-                        $delete_blog_tags_stmt->close();
-                        $delete_tags_query = "DELETE FROM `tags` WHERE `id` = ?";
-                        $delete_tags_stmt = $this->conn->prepare($delete_tags_query);
-                        $delete_tags_stmt->bind_param("i", $tag_id);
-                        $delete_tags_stmt->execute();
-                        $delete_tags_stmt->close();
-                        $this->returnToHome();
-                    } else {
-                        $this->returnToHome();
-                    }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-
-            public function attachTagHandle()
-            {
-                if (isset($_SESSION['original_password'])) {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                        $id_post = $_POST['id_post'];
-                        $tag_id = $_POST['tag_id'];
-
-                        $type = substr($id_post, 0, 4);
-                        $id = substr($id_post, 4);
-
-                        if ($type == 'docs') {
-                            $sql = "INSERT INTO `doc_tags` (`doc_id`, `tag_id`) VALUES (?, ?)";
-                            $stmt = $this->conn->prepare($sql);
-                            $stmt->bind_param("ii", $id, $tag_id);
-                            $stmt->execute();
-                            $stmt->close();
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
                             $this->returnToHome();
-                        } elseif ($type == 'blog') {
-                            $sql = "INSERT INTO `blog_tags` (`blog_id`, `tag_id`) VALUES (?, ?)";
-                            $stmt = $this->conn->prepare($sql);
-                            $stmt->bind_param("ii", $id, $tag_id);
-                            $stmt->execute();
-                            $stmt->close();
+                        }
+                    }
+
+                    public function addTagHandle()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                                $tag_name = $_POST['tag_name'];
+                                $sql = "INSERT INTO `tags` (`id`, `tag_name`) VALUES (NULL, ?);";
+                                $stmt = mysqli_prepare($this->conn, $sql);
+                                mysqli_stmt_bind_param($stmt, "s", $tag_name);
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function bootstrapHead($title)
+                    {
+                        ?>
+                        <!DOCTYPE html>
+                        <html lang="en">
+
+                        <head>
+                            <meta charset="UTF-8">
+                            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                            <title><?php echo $title; ?></title>
+
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+                            <script src="assets/js/tinymce.min.js"></script>
+
+                        </head>
+                        <?php
+                    }
+
+                    public function editLinktree()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $result = $this->getLinktree($this->conn);
+                            if ($result !== null && !empty($result)) {
+                                $this->bootstrapHead('Edit Linktree');
+                        ?>
+
+                                <body>
+                                    <div class="container">
+
+                                        <form action="/editLinktreeHandle" method="post">
+                                            <?php
+                                            foreach ($result as $row) {
+                                            ?>
+                                                <input type="hidden" name="id<?php echo $row['id'] ?>" value="<?php echo $row['id'] ?>">
+                                                <label class="form-label" for="name">Platform <?php echo $row['id'] ?></label><br>
+                                                <select name="platform<?php echo $row['id'] ?>" class="form-select">
+                                                    <option selected><?php echo $row['platform_name'] ?></option>
+                                                    <option value="facebook">Facebook</option>
+                                                    <option value="instagram">Instagram</option>
+                                                    <option value="youtube">Youtube</option>
+                                                    <option value="twitter">Twitter</option>
+                                                </select>
+                                                <input class="form-control" type="text" id="url<?php echo $row['id'] ?>" name="url<?php echo $row['id'] ?>" value="<?php echo $row['url'] ?>"><br>
+
+                                            <?php
+                                            }
+                                            ?>
+                                            <input class="btn btn-dark" type="submit" value="Update">
+                                        </form>
+
+                                    </div>
+                                </body>
+
+                        </html><?php
+                            }
+                                ?>
+
+
+                <?php
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function deleteAttachTag()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $getTagquery = "SELECT * FROM tags";
+                            $getTagresult = $this->conn->query($getTagquery);
+
+                            $getpostquery = "SELECT *, 'docs' AS source FROM docs
+                UNION
+                SELECT *, 'blog' AS source FROM blogs;
+                ";
+                            $getpostresult = $this->conn->query($getpostquery);
+                ?>
+                    <form action="/deleteAttachTagHandle" method="POST">
+                        <label for="tag_id">Choose Tag to attach</label><br>
+                        <select name="tag_id">
+                            <?php
+                            while ($row = $getTagresult->fetch_assoc()) {
+                                echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
+                            }
+                            ?>
+                        </select><br>
+
+                        <label for="id_post">Choose Post to being attached</label><br>
+                        <select name="id_post">
+                            <?php
+                            while ($row = $getpostresult->fetch_assoc()) {
+                                echo "<option value='" . $row['source'] . $row['id'] . "'>" . $row['source'] . ' ' . $row['project'] . "</option>";
+                            }
+                            ?>
+                        </select><br>
+
+                        <input type="submit" name="delete" value="Go">
+                    </form>
+
+                    <?php
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function deleteAttachTagHandle()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                            $id_post = $_POST['id_post'];
+                            $tag_id = $_POST['tag_id'];
+
+                            $type = substr($id_post, 0, 4);
+                            $id = substr($id_post, 4);
+
+                            if ($type == 'docs') {
+                                $sql = "DELETE FROM `doc_tags` WHERE `doc_id` = ? AND `tag_id` = ?";
+                                $stmt = $this->conn->prepare($sql);
+                                $stmt->bind_param("ii", $id, $tag_id);
+                                $stmt->execute();
+                                $stmt->close();
+                                $this->returnToHome();
+                            } elseif ($type == 'blog') {
+                                $sql = "DELETE FROM `blog_tags` WHERE `blog_id` = ? AND `tag_id` = ?";
+                                $stmt = $this->conn->prepare($sql);
+                                $stmt->bind_param("ii", $id, $tag_id);
+                                $stmt->execute();
+                                $stmt->close();
+                                $this->returnToHome();
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function editLinktreeHandle()
+                    {
+                        $url1 = $_POST['url1'];
+                        $url2 = $_POST['url2'];
+                        $url3 = $_POST['url3'];
+                        $url4 = $_POST['url4'];
+
+                        $id1 = $_POST['id1'];
+                        $id2 = $_POST['id2'];
+                        $id3 = $_POST['id3'];
+                        $id4 = $_POST['id4'];
+
+                        $platform1 = $_POST['platform1'];
+                        $platform2 = $_POST['platform2'];
+                        $platform3 = $_POST['platform3'];
+                        $platform4 = $_POST['platform4'];
+
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            // Updating the first record
+                            $query1 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
+                            $stmt1 = $this->conn->prepare($query1);
+                            $stmt1->bind_param("ssi", $platform1, $url1, $id1);
+                            $result1 = $stmt1->execute();
+
+                            // Updating the second record
+                            $query2 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
+                            $stmt2 = $this->conn->prepare($query2);
+                            $stmt2->bind_param("ssi", $platform2, $url2, $id2);
+                            $result2 = $stmt2->execute();
+
+                            // Updating the third record
+                            $query3 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
+                            $stmt3 = $this->conn->prepare($query3);
+                            $stmt3->bind_param("ssi", $platform3, $url3, $id3);
+                            $result3 = $stmt3->execute();
+
+                            // Updating the fourth record
+                            $query4 = "UPDATE `linktree` SET `platform_name` = ?, `url` = ? WHERE `id` = ?";
+                            $stmt4 = $this->conn->prepare($query4);
+                            $stmt4->bind_param("ssi", $platform4, $url4, $id4);
+                            $result4 = $stmt4->execute();
                             $this->returnToHome();
                         } else {
                             $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
 
-            public function display_form($type, $form_action, $operation, $row = null)
-            {
-                $pageTitle = ($operation == 'add') ? "Add $type Page" : "Edit $type Page";
-                $submitButtonText = ($operation == 'add') ? 'Submit' : 'Update';
-                $typepost = ($type == 'blog') ? 'topic' : 'project';
-                $this->bootstrapHead($pageTitle);
-        ?>
-        <body>
-            <div class="container">
+                    public function attachTag()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                                $getTagquery = "SELECT * FROM tags";
+                                $getTagresult = $this->conn->query($getTagquery);
+                                $getpostquery = "SELECT *, 'docs' AS source FROM docs
+                UNION
+                SELECT *, 'blog' AS source FROM blogs;
+                ";
+                                $getpostresult = $this->conn->query($getpostquery);
+                    ?>
+                        <form action="/attachTagHandle" method="POST">
+                            <label for="tag_id">Choose Tag to attach</label><br>
+                            <select name="tag_id">
+                                <?php
+                                while ($row = $getTagresult->fetch_assoc()) {
+                                    echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
+                                }
+                                ?>
+                            </select><br>
 
-                <form action="<?php echo $form_action; ?>" method="post">
-                    <label class="form-label pt-3" for="topic">Topic:</label><br>
-                    <input class="form-control" type="text" id="<?php echo $typepost; ?>" name="<?php echo $typepost; ?>" value="<?php echo ($row) ? $row[$typepost] : ''; ?>"><br>
+                            <label for="id_post">Choose Post to being attached</label><br>
+                            <select name="id_post">
+                                <?php
+                                while ($row = $getpostresult->fetch_assoc()) {
+                                    echo "<option value='" . $row['source'] . $row['id'] . "'>" . $row['source'] . ' ' . $row['project'] . "</option>";
+                                }
+                                ?>
+                            </select><br>
+                            <input type="submit" name="delete" value="Go">
+                        </form>
 
-                    <label class="form-label" for="docname">Docname:</label><br>
-                    <input class="form-control" type="text" id="docname" name="docname" value="<?php echo ($row) ? $row['docname'] : ''; ?>"><br>
+                    <?php
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+                    public function deleteTag()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM tags";
+                            $result = $this->conn->query($query);
+                    ?>
+                    <form action="/deleteTagHandle" method="POST">
+                        <label for="tag_id">Choose Blogs to Delete</label><br>
+                        <select name="tag_id">
+                            <?php
+                            while ($row = $result->fetch_assoc()) {
+                                echo "<option value='" . $row['id'] . "'>" . $row['tag_name'] . "</option>";
+                            }
+                            ?>
+                        </select>
+                        <br>
+                        <input type="submit" name="delete" value="Go">
+                    </form>
+                <?php
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+                    public function deleteTagHandle()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            if (isset($_POST['delete'])) {
+                                $tag_id = $_POST['tag_id'];
+                                $delete_doc_tags_query = "DELETE FROM `doc_tags` WHERE `tag_id` = ?";
+                                $delete_doc_tags_stmt = $this->conn->prepare($delete_doc_tags_query);
+                                $delete_doc_tags_stmt->bind_param("i", $tag_id);
+                                $delete_doc_tags_stmt->execute();
+                                $delete_doc_tags_stmt->close();
+                                $delete_blog_tags_query = "DELETE FROM `blog_tags` WHERE `tag_id` = ?";
+                                $delete_blog_tags_stmt = $this->conn->prepare($delete_blog_tags_query);
+                                $delete_blog_tags_stmt->bind_param("i", $tag_id);
+                                $delete_blog_tags_stmt->execute();
+                                $delete_blog_tags_stmt->close();
+                                $delete_tags_query = "DELETE FROM `tags` WHERE `id` = ?";
+                                $delete_tags_stmt = $this->conn->prepare($delete_tags_query);
+                                $delete_tags_stmt->bind_param("i", $tag_id);
+                                $delete_tags_stmt->execute();
+                                $delete_tags_stmt->close();
+                                $this->returnToHome();
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
 
-                    <label class="form-label" for="title">Title:</label><br>
-                    <input class="form-control" type="text" id="title" name="title" value="<?php echo ($row) ? $row['title'] : ''; ?>"><br>
 
-                    <label class="form-label" for="hypertext">Hypertext:</label><br>
-                    <textarea id="hypertext" name="hypertext" rows="4" cols="50"><?php echo ($row) ? $row['hypertext'] : ''; ?></textarea><br>
+                    public function attachTagHandle()
+                    {
+                        if (isset($_SESSION['original_password'])) {
+                            if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
 
-                    <label class="form-label" for="shortdesc">Short Description:</label><br>
-                    <textarea class="form-control" id="shortdesc" name="shortdesc" rows="4" cols="50"><?php echo ($row) ? $row['shortdesc'] : ''; ?></textarea><br>
+                                $id_post = $_POST['id_post'];
+                                $tag_id = $_POST['tag_id'];
 
-                    <?php if ($operation == 'edit') : ?>
-                        <?php if ($type == 'blog') : ?>
-                            <input name="blog_id" type="hidden" value="<?php echo $row['id'] ?>">
-                        <?php endif; ?>
-                        <?php if ($type == 'doc') : ?>
-                            <input name="doc_id" type="hidden" value="<?php echo $row['id'] ?>">
-                        <?php endif; ?>
-                    <?php endif; ?>
+                                $type = substr($id_post, 0, 4);
+                                $id = substr($id_post, 4);
 
+                                if ($type == 'docs') {
+                                    $sql = "INSERT INTO `doc_tags` (`doc_id`, `tag_id`) VALUES (?, ?)";
+                                    $stmt = $this->conn->prepare($sql);
+                                    $stmt->bind_param("ii", $id, $tag_id);
+                                    $stmt->execute();
+                                    $stmt->close();
+                                    $this->returnToHome();
+                                } elseif ($type == 'blog') {
+                                    $sql = "INSERT INTO `blog_tags` (`blog_id`, `tag_id`) VALUES (?, ?)";
+                                    $stmt = $this->conn->prepare($sql);
+                                    $stmt->bind_param("ii", $id, $tag_id);
+                                    $stmt->execute();
+                                    $stmt->close();
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
 
-                    <input class="btn btn-dark" type="submit" value="<?php echo $submitButtonText; ?>">
-                </form>
-
-                <script>
-                    tinymce.init({
-                        selector: '#hypertext',
-                        height: 500,
-                        plugins: 'code',
-                        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | code',
-                    });
-                </script>
-            </div>
-        </body>
-
-        </html>
-
-    <?php
-            }
-
-            public function display_about_form($form_action, $row)
-            {
-                $this->bootstrapHead('Edit About Section') 
+                    public function display_form($type, $form_action, $operation, $row = null)
+                    {
+                        $pageTitle = ($operation == 'add') ? "Add $type Page" : "Edit $type Page";
+                        $submitButtonText = ($operation == 'add') ? 'Submit' : 'Update';
+                        $typepost = ($type == 'blog') ? 'topic' : 'project';
+                        $this->bootstrapHead($pageTitle);
                 ?>
-        <body>
-            <div class="container">
 
-                <form action="<?php echo $form_action; ?>" method="post" enctype="multipart/form-data">
+                <body>
+                    <div class="container">
 
-                    <label class="form-label" for="name">Name </label><br>
-                    <input class="form-control" type="text" id="name" name="name" value="<?php echo $row['name'] ?>"><br>
+                        <form action="<?php echo $form_action; ?>" method="post">
+                            <label class="form-label pt-3" for="topic">Topic:</label><br>
+                            <input class="form-control" type="text" id="<?php echo $typepost; ?>" name="<?php echo $typepost; ?>" value="<?php echo ($row) ? $row[$typepost] : ''; ?>"><br>
 
-                    <label for="formFile" class="form-label">Profile Picture</label>
-                    <input class="form-control" type="file" id="formFile" name="formFile" accept=".png, .jpg"><br>
+                            <label class="form-label" for="docname">Docname:</label><br>
+                            <input class="form-control" type="text" id="docname" name="docname" value="<?php echo ($row) ? $row['docname'] : ''; ?>"><br>
 
-                    <label class="form-label" for="hypertexthome">Hypertext Home Page</label><br>
-                    <textarea class="form-control" id="hypertexthome" name="hypertexthome" rows="4" cols="50"><?php echo $row['hypertexthome'] ?></textarea><br>
+                            <label class="form-label" for="title">Title:</label><br>
+                            <input class="form-control" type="text" id="title" name="title" value="<?php echo ($row) ? $row['title'] : ''; ?>"><br>
 
-                    <label class="form-label" for="hypertextabout">Hypertext About Page</label><br>
-                    <textarea id="hypertextabout" name="hypertextabout" rows="4" cols="50"><?php echo $row['hypertextabout'] ?></textarea><br>
+                            <label class="form-label" for="hypertext">Hypertext:</label><br>
+                            <textarea id="hypertext" name="hypertext" rows="4" cols="50"><?php echo ($row) ? $row['hypertext'] : ''; ?></textarea><br>
+
+                            <label class="form-label" for="shortdesc">Short Description:</label><br>
+                            <textarea class="form-control" id="shortdesc" name="shortdesc" rows="4" cols="50"><?php echo ($row) ? $row['shortdesc'] : ''; ?></textarea><br>
+
+                            <?php if ($operation == 'edit') : ?>
+                                <?php if ($type == 'blog') : ?>
+                                    <input name="blog_id" type="hidden" value="<?php echo $row['id'] ?>">
+                                <?php endif; ?>
+                                <?php if ($type == 'doc') : ?>
+                                    <input name="doc_id" type="hidden" value="<?php echo $row['id'] ?>">
+                                <?php endif; ?>
+                            <?php endif; ?>
 
 
-                    <input class="btn btn-dark" type="submit" value="Update">
-                </form>
+                            <input class="btn btn-dark" type="submit" value="<?php echo $submitButtonText; ?>">
+                        </form>
 
-                <script>
-                    tinymce.init({
-                        selector: '#hypertextabout',
-                        height: 500,
-                        plugins: 'code',
-                        toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | code',
-                    });
-                </script>
-            </div>
-        </body>
+                        <script>
+                            tinymce.init({
+                                selector: '#hypertext',
+                                height: 500,
+                                plugins: 'code',
+                                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | code',
+                            });
+                        </script>
+                    </div>
+                </body>
+
+                </html>
+
+            <?php
+                    }
+
+                    public function display_about_form($form_action, $row)
+                    {
+                        $this->bootstrapHead('Edit About Section')
+            ?>
+
+                <body>
+                    <div class="container">
+
+                        <form action="<?php echo $form_action; ?>" method="post" enctype="multipart/form-data">
+
+                            <label class="form-label" for="name">Name </label><br>
+                            <input class="form-control" type="text" id="name" name="name" value="<?php echo $row['name'] ?>"><br>
+
+                            <label for="formFile" class="form-label">Profile Picture</label>
+                            <input class="form-control" type="file" id="formFile" name="formFile" accept=".png, .jpg"><br>
+
+                            <label class="form-label" for="hypertexthome">Hypertext Home Page</label><br>
+                            <textarea class="form-control" id="hypertexthome" name="hypertexthome" rows="4" cols="50"><?php echo $row['hypertexthome'] ?></textarea><br>
+
+                            <label class="form-label" for="hypertextabout">Hypertext About Page</label><br>
+                            <textarea id="hypertextabout" name="hypertextabout" rows="4" cols="50"><?php echo $row['hypertextabout'] ?></textarea><br>
+
+
+                            <input class="btn btn-dark" type="submit" value="Update">
+                        </form>
+
+                        <script>
+                            tinymce.init({
+                                selector: '#hypertextabout',
+                                height: 500,
+                                plugins: 'code',
+                                toolbar: 'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | code',
+                            });
+                        </script>
+                    </div>
+                </body>
 
                 </html>
 
                 <?php
-            }
+                    }
 
-            public function editBlog()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $query = "SELECT * FROM blogs";
-                    $result = $this->conn->query($query);
+                    public function editBlog()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM blogs";
+                            $result = $this->conn->query($query);
                 ?>
                     <form action="/editBlogPage" method="POST">
                         <label for="blog_id">Choose Blogs to edit</label><br>
@@ -1548,34 +1552,34 @@ class personalWeb
                     </form>
 
                 <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function editBlogPage()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $blog_id = $_POST['blog_id'];
-                    $sql = "SELECT * FROM blogs WHERE id = ?";
-                    $stmt = mysqli_prepare($this->conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "s", $blog_id);
-                    mysqli_stmt_execute($stmt);
-                    $result = mysqli_stmt_get_result($stmt);
-
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        $this->display_form('blog', '/editBlogHandle', 'edit', $row);
+                        } else {
+                            $this->returnToHome();
+                        }
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
 
-            public function editTag()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $query = "SELECT * FROM tags";
-                    $result = $this->conn->query($query);
+                    public function editBlogPage()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $blog_id = $_POST['blog_id'];
+                            $sql = "SELECT * FROM blogs WHERE id = ?";
+                            $stmt = mysqli_prepare($this->conn, $sql);
+                            mysqli_stmt_bind_param($stmt, "s", $blog_id);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
+
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $this->display_form('blog', '/editBlogHandle', 'edit', $row);
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function editTag()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM tags";
+                            $result = $this->conn->query($query);
                 ?>
                     <form action="/editTagPage" method="POST">
                         <label for="tag_id">Choose Docs to edit</label><br>
@@ -1590,22 +1594,22 @@ class personalWeb
                     </form>
 
                     <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
 
-            public function editTagPage()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $tag_id = $_POST['tag_id'];
-                    $sql = "SELECT * FROM tags WHERE id = ?";
-                    $stmt = mysqli_prepare($this->conn, $sql);
-                    mysqli_stmt_bind_param($stmt, "s", $tag_id);
-                    mysqli_stmt_execute($stmt);
-                    $result = mysqli_stmt_get_result($stmt);
+                    public function editTagPage()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $tag_id = $_POST['tag_id'];
+                            $sql = "SELECT * FROM tags WHERE id = ?";
+                            $stmt = mysqli_prepare($this->conn, $sql);
+                            mysqli_stmt_bind_param($stmt, "s", $tag_id);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
 
-                    while ($row = mysqli_fetch_assoc($result)) {
+                            while ($row = mysqli_fetch_assoc($result)) {
                     ?>
                         <form action="/editTagHandle" method="POST">
 
@@ -1614,72 +1618,72 @@ class personalWeb
                             <input name="tag_id" type="hidden" value="<?php echo $row['id'] ?>">
 
                         <?php
-                    }
+                            }
                         ?>
                         <input type="submit" value="Go">
                         </form>
 
                     <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function editTagHandle()
-            {
-                $tag_id = $_POST['tag_id'];
-                $tag_name = $_POST['tag_name'];
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $sql = "UPDATE `tags` SET `tag_name` = ? WHERE `tags`.`id` = ?;";
-                    $stmt = mysqli_prepare($this->conn, $sql);
-
-                    if ($stmt) {
-                        mysqli_stmt_bind_param($stmt, "si", $tag_name, $tag_id);
-
-                        if (mysqli_stmt_execute($stmt)) {
-                            $this->returnToHome();
                         } else {
                             $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
 
-            public function editBlogHandle()
-            {
-                $blog_id = $_POST['blog_id'];
-                $docname = $_POST['docname'];
-                $topic = $_POST['topic'];
-                $title = $_POST['title'];
-                $hypertext = $_POST['hypertext'];
-                $shortdesc = $_POST['shortdesc'];
+                    public function editTagHandle()
+                    {
+                        $tag_id = $_POST['tag_id'];
+                        $tag_name = $_POST['tag_name'];
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $sql = "UPDATE `tags` SET `tag_name` = ? WHERE `tags`.`id` = ?;";
+                            $stmt = mysqli_prepare($this->conn, $sql);
 
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                    $sql = "UPDATE `blogs` SET `topic` = ?, `docname` = ?, `title` = ?, `hypertext` = ?, `shortdesc` = ? WHERE `blogs`.`id` = ?;";
-                    $stmt = mysqli_prepare($this->conn, $sql);
+                            if ($stmt) {
+                                mysqli_stmt_bind_param($stmt, "si", $tag_name, $tag_id);
 
-                    if ($stmt) {
-                        mysqli_stmt_bind_param($stmt, "sssssi", $topic, $docname, $title, $hypertext, $shortdesc, $blog_id);
-
-                        if (mysqli_stmt_execute($stmt)) {
-                            $this->returnToHome();
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
                         } else {
                             $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
-            public function deleteImage()
-            {
-                if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                    public function editBlogHandle()
+                    {
+                        $blog_id = $_POST['blog_id'];
+                        $docname = $_POST['docname'];
+                        $topic = $_POST['topic'];
+                        $title = $_POST['title'];
+                        $hypertext = $_POST['hypertext'];
+                        $shortdesc = $_POST['shortdesc'];
+
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $sql = "UPDATE `blogs` SET `topic` = ?, `docname` = ?, `title` = ?, `hypertext` = ?, `shortdesc` = ? WHERE `blogs`.`id` = ?;";
+                            $stmt = mysqli_prepare($this->conn, $sql);
+
+                            if ($stmt) {
+                                mysqli_stmt_bind_param($stmt, "sssssi", $topic, $docname, $title, $hypertext, $shortdesc, $blog_id);
+
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+                    public function deleteImage()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
 
                     ?>
                         <!DOCTYPE html>
@@ -1712,30 +1716,30 @@ class personalWeb
 
                         </html>
                     <?php
-                } else {
-                    $this->returnToHome();
-                }
-            }
-
-            public function deleteImageHandle()
-            {
-                $imageDirectory = 'assets/img/';
-                $selectedImage = $_POST['image'];
-                $imageFilePath = $imageDirectory . $selectedImage;
-                if (file_exists($imageFilePath)) {
-                    if (unlink($imageFilePath)) {
-                        $this->returnToHome();
-                    } else {
-                        $this->returnToHome();
+                        } else {
+                            $this->returnToHome();
+                        }
                     }
-                } else {
-                    $this->returnToHome();
-                }
-            }
 
-            public function manage()
-            {
-                if (isset($_SESSION['original_password'])) {
+                    public function deleteImageHandle()
+                    {
+                        $imageDirectory = 'assets/img/';
+                        $selectedImage = $_POST['image'];
+                        $imageFilePath = $imageDirectory . $selectedImage;
+                        if (file_exists($imageFilePath)) {
+                            if (unlink($imageFilePath)) {
+                                $this->returnToHome();
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function manage()
+                    {
+                        if (isset($_SESSION['original_password'])) {
                     ?>
                         <!DOCTYPE html>
                         <html lang="en">
@@ -1792,50 +1796,91 @@ class personalWeb
                     <?php
 
 
-                } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $password = $_POST['password'];
-                    if (password_verify($password, $this->getHashedPassword())) {
-                        $_SESSION['original_password'] = $password;
-                        header('Location: ../');
-                        exit;
-                    } else {
-                        header('Location: ../');
-                        exit;
-                    }
-                } else {
+                        } elseif ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                            $password = $_POST['password'];
+                            if (password_verify($password, $this->getHashedPassword())) {
+                                $_SESSION['original_password'] = $password;
+                                header('Location: ../');
+                                exit;
+                            } else {
+                                header('Location: ../');
+                                exit;
+                            }
+                        } else {
                     ?>
-                        <form action="" method="post">
-                            <label for="password">Password:</label><br>
-                            <input type="password" id="password" name="password"><br><br>
-                            <input type="submit" value="Submit">
-                        </form>
-                        <?php
-                    }
-                }
+                        <!DOCTYPE html>
+                        <html lang="en">
 
-                public function editAbout()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $result = $this->getAboutData($this->conn);
-                        if ($result !== null && !empty($result)) {
-                            foreach ($result as $row) {
-                                $this->display_about_form('/editAboutHandle', $row);
+                        <head>
+                            <!-- Title -->
+                            <title>Unlock</title>
+
+                            <!-- Styles -->
+                            <link href="https://fonts.googleapis.com/css?family=Poppins:400,500,700,800&amp;display=swap" rel="stylesheet">
+                            <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+                            <!-- Theme Styles -->
+                            <link href="assets/css/main.min.css" rel="stylesheet">
+
+
+                        </head>
+
+                        <body class="login-page">
+                            <div class="container">
+                                <div class="row justify-content-md-center">
+                                    <div class="col-md-12 col-lg-4">
+                                        <div class="card login-box-container">
+                                            <div class="card-body">
+                                                <div class="authent-text">
+                                                    <p>Welcome back!</p>
+                                                    <p>Enter your password to unlock.</p>
+                                                </div>
+                                                <form action="" method="post">
+                                                    <div class="mb-3">
+                                                        <div class="form-floating">
+                                                            <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                                                            <label for="password">Password</label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-grid">
+                                                        <button type="submit" class="btn btn-info m-b-xs">Unlock</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </body>
+
+                        </html>
+                        <?php
+                        }
+                    }
+
+                    public function editAbout()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $result = $this->getAboutData($this->conn);
+                            if ($result !== null && !empty($result)) {
+                                foreach ($result as $row) {
+                                    $this->display_about_form('/editAboutHandle', $row);
                         ?>
                         <?php
+                                }
                             }
-                        }
                         ?>
                     <?php
-                    } else {
-                        $this->returnToHome();
+                        } else {
+                            $this->returnToHome();
+                        }
                     }
-                }
 
-                public function deleteBlog()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $query = "SELECT * FROM blogs";
-                        $result = $this->conn->query($query);
+                    public function deleteBlog()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM blogs";
+                            $result = $this->conn->query($query);
                     ?>
                         <form action="/deleteBlogHandle" method="POST">
                             <label for="blog_id">Choose Blogs to Delete</label><br>
@@ -1850,49 +1895,49 @@ class personalWeb
                             <input type="submit" name="delete" value="Go">
                         </form>
                     <?php
-                    } else {
-                        $this->returnToHome();
-                    }
-                }
-
-                public function deleteBlogHandle()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                        $blog_id = $_POST['blog_id'];
-                        $delete_tags_query = "DELETE FROM blog_tags WHERE blog_id = $blog_id";
-                        $delete_tags_result = $this->conn->query($delete_tags_query);
-
-                        if (!$delete_tags_result) {
-                            $this->returnToHome();
                         } else {
-                            $delete_blog_query = "DELETE FROM blogs WHERE id = $blog_id";
-                            $delete_blog_result = $this->conn->query($delete_blog_query);
-                            if (!$delete_blog_result) {
-                                $rollback_tags_query = "ROLLBACK";
-                                $this->conn->query($rollback_tags_query);
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function deleteBlogHandle()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                            $blog_id = $_POST['blog_id'];
+                            $delete_tags_query = "DELETE FROM blog_tags WHERE blog_id = $blog_id";
+                            $delete_tags_result = $this->conn->query($delete_tags_query);
+
+                            if (!$delete_tags_result) {
                                 $this->returnToHome();
                             } else {
-                                $delete_view_query = "DELETE FROM `views` WHERE `content_type` = 'blog' AND content_id = $blog_id;";
-                                $delete_view_result = $this->conn->query($delete_view_query);
-
-                                if ($delete_view_result) {
+                                $delete_blog_query = "DELETE FROM blogs WHERE id = $blog_id";
+                                $delete_blog_result = $this->conn->query($delete_blog_query);
+                                if (!$delete_blog_result) {
+                                    $rollback_tags_query = "ROLLBACK";
+                                    $this->conn->query($rollback_tags_query);
                                     $this->returnToHome();
                                 } else {
-                                    $this->returnToHome();
+                                    $delete_view_query = "DELETE FROM `views` WHERE `content_type` = 'blog' AND content_id = $blog_id;";
+                                    $delete_view_result = $this->conn->query($delete_view_query);
+
+                                    if ($delete_view_result) {
+                                        $this->returnToHome();
+                                    } else {
+                                        $this->returnToHome();
+                                    }
                                 }
                             }
+                        } else {
+                            $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
                     }
-                }
 
-                public function editDoc()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $query = "SELECT * FROM docs";
-                        $result = $this->conn->query($query);
+                    public function editDoc()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM docs";
+                            $result = $this->conn->query($query);
                     ?>
                         <form action="/editDocPage" method="POST">
                             <label for="doc_id">Choose Docs to edit</label><br>
@@ -1907,34 +1952,34 @@ class personalWeb
                         </form>
 
                     <?php
-                    } else {
-                        $this->returnToHome();
-                    }
-                }
-
-                public function editDocPage()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $doc_id = $_POST['doc_id'];
-                        $sql = "SELECT * FROM docs WHERE id = ?";
-                        $stmt = mysqli_prepare($this->conn, $sql);
-                        mysqli_stmt_bind_param($stmt, "s", $doc_id);
-                        mysqli_stmt_execute($stmt);
-                        $result = mysqli_stmt_get_result($stmt);
-
-                        while ($row = mysqli_fetch_assoc($result)) {
-                            $this->display_form('doc', '/editDocHandle', 'edit', $row);
+                        } else {
+                            $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
                     }
-                }
 
-                public function deleteDoc()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $query = "SELECT * FROM docs";
-                        $result = $this->conn->query($query);
+                    public function editDocPage()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $doc_id = $_POST['doc_id'];
+                            $sql = "SELECT * FROM docs WHERE id = ?";
+                            $stmt = mysqli_prepare($this->conn, $sql);
+                            mysqli_stmt_bind_param($stmt, "s", $doc_id);
+                            mysqli_stmt_execute($stmt);
+                            $result = mysqli_stmt_get_result($stmt);
+
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                $this->display_form('doc', '/editDocHandle', 'edit', $row);
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function deleteDoc()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $query = "SELECT * FROM docs";
+                            $result = $this->conn->query($query);
                     ?>
                         <form action="/deleteDocHandle" method="POST">
                             <label for="doc_id">Choose Blogs to Delete</label><br>
@@ -1949,116 +1994,116 @@ class personalWeb
                             <input type="submit" name="delete" value="Go">
                         </form>
             <?php
-                    } else {
-                        $this->returnToHome();
-                    }
-                }
-
-                public function deleteDocHandle()
-                {
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                        $doc_id = $_POST['doc_id'];
-                        $delete_tags_query = "DELETE FROM doc_tags WHERE doc_id = $doc_id";
-                        $delete_tags_result = $this->conn->query($delete_tags_query);
-
-                        if (!$delete_tags_result) {
-                            $this->returnToHome();
                         } else {
-                            $delete_doc_query = "DELETE FROM docs WHERE id = $doc_id";
-                            $delete_doc_result = $this->conn->query($delete_doc_query);
-                            if (!$delete_doc_result) {
-                                $rollback_tags_query = "ROLLBACK";
-                                $this->conn->query($rollback_tags_query);
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function deleteDocHandle()
+                    {
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                            $doc_id = $_POST['doc_id'];
+                            $delete_tags_query = "DELETE FROM doc_tags WHERE doc_id = $doc_id";
+                            $delete_tags_result = $this->conn->query($delete_tags_query);
+
+                            if (!$delete_tags_result) {
                                 $this->returnToHome();
                             } else {
-                                $delete_view_query = "DELETE FROM `views` WHERE `content_type` = 'doc' AND content_id = $doc_id;";
-                                $delete_view_result = $this->conn->query($delete_view_query);
+                                $delete_doc_query = "DELETE FROM docs WHERE id = $doc_id";
+                                $delete_doc_result = $this->conn->query($delete_doc_query);
+                                if (!$delete_doc_result) {
+                                    $rollback_tags_query = "ROLLBACK";
+                                    $this->conn->query($rollback_tags_query);
+                                    $this->returnToHome();
+                                } else {
+                                    $delete_view_query = "DELETE FROM `views` WHERE `content_type` = 'doc' AND content_id = $doc_id;";
+                                    $delete_view_result = $this->conn->query($delete_view_query);
 
-                                if ($delete_view_result) {
+                                    if ($delete_view_result) {
+                                        $this->returnToHome();
+                                    } else {
+                                        $this->returnToHome();
+                                    }
+                                }
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function editDocHandle()
+                    {
+                        $doc_id = $_POST['doc_id'];
+                        $docname = $_POST['docname'];
+                        $project = $_POST['project'];
+                        $title = $_POST['title'];
+                        $hypertext = $_POST['hypertext'];
+                        $shortdesc = $_POST['shortdesc'];
+
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+                            $sql = "UPDATE `docs` SET `project` = ?, `docname` = ?, `title` = ?, `hypertext` = ?, `shortdesc` = ? WHERE `docs`.`id` = ?;";
+                            $stmt = mysqli_prepare($this->conn, $sql);
+
+                            if ($stmt) {
+                                mysqli_stmt_bind_param($stmt, "sssssi", $project, $docname, $title, $hypertext, $shortdesc, $doc_id);
+
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
+                            } else {
+                                $this->returnToHome();
+                            }
+                        } else {
+                            $this->returnToHome();
+                        }
+                    }
+
+                    public function editAboutHandle()
+                    {
+                        $name = $_POST['name'];
+                        $hypertexthome = $_POST['hypertexthome'];
+                        $hypertextabout = $_POST['hypertextabout'];
+
+                        if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
+
+                            if (isset($_FILES["formFile"]) && $_FILES["formFile"]["error"] == UPLOAD_ERR_OK) {
+                                $uploadDirectory = "assets/img/";
+                                $newFileName = "profile.jpg";
+                                $uploadFilePath = $uploadDirectory . $newFileName;
+                                if (move_uploaded_file($_FILES["formFile"]["tmp_name"], $uploadFilePath)) {
                                     $this->returnToHome();
                                 } else {
                                     $this->returnToHome();
                                 }
                             }
-                        }
-                    } else {
-                        $this->returnToHome();
-                    }
-                }
 
-                public function editDocHandle()
-                {
-                    $doc_id = $_POST['doc_id'];
-                    $docname = $_POST['docname'];
-                    $project = $_POST['project'];
-                    $title = $_POST['title'];
-                    $hypertext = $_POST['hypertext'];
-                    $shortdesc = $_POST['shortdesc'];
+                            $sql = "UPDATE `about` SET `hypertexthome` = ?, `name` = ?, `hypertextabout` = ? WHERE `about`.`id` = 1;";
+                            $stmt = mysqli_prepare($this->conn, $sql);
 
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-                        $sql = "UPDATE `docs` SET `project` = ?, `docname` = ?, `title` = ?, `hypertext` = ?, `shortdesc` = ? WHERE `docs`.`id` = ?;";
-                        $stmt = mysqli_prepare($this->conn, $sql);
+                            if ($stmt) {
+                                mysqli_stmt_bind_param($stmt, "sss", $hypertexthome, $name, $hypertextabout);
 
-                        if ($stmt) {
-                            mysqli_stmt_bind_param($stmt, "sssssi", $project, $docname, $title, $hypertext, $shortdesc, $doc_id);
-
-                            if (mysqli_stmt_execute($stmt)) {
-                                $this->returnToHome();
+                                if (mysqli_stmt_execute($stmt)) {
+                                    $this->returnToHome();
+                                } else {
+                                    $this->returnToHome();
+                                }
                             } else {
                                 $this->returnToHome();
                             }
                         } else {
-                            $this->returnToHome();
                         }
-                    } else {
-                        $this->returnToHome();
+                    }
+
+                    public function returnToHome()
+                    {
+                        header('Location: /');
+                        exit;
                     }
                 }
 
-                public function editAboutHandle()
-                {
-                    $name = $_POST['name'];
-                    $hypertexthome = $_POST['hypertexthome'];
-                    $hypertextabout = $_POST['hypertextabout'];
-
-                    if (password_verify($_SESSION['original_password'], $this->getHashedPassword())) {
-
-                        if (isset($_FILES["formFile"]) && $_FILES["formFile"]["error"] == UPLOAD_ERR_OK) {
-                            $uploadDirectory = "assets/img/";
-                            $newFileName = "profile.jpg";
-                            $uploadFilePath = $uploadDirectory . $newFileName;
-                            if (move_uploaded_file($_FILES["formFile"]["tmp_name"], $uploadFilePath)) {
-                                $this->returnToHome();
-                            } else {
-                                $this->returnToHome();
-                            }
-                        }
-
-                        $sql = "UPDATE `about` SET `hypertexthome` = ?, `name` = ?, `hypertextabout` = ? WHERE `about`.`id` = 1;";
-                        $stmt = mysqli_prepare($this->conn, $sql);
-
-                        if ($stmt) {
-                            mysqli_stmt_bind_param($stmt, "sss", $hypertexthome, $name, $hypertextabout);
-
-                            if (mysqli_stmt_execute($stmt)) {
-                                $this->returnToHome();
-                            } else {
-                                $this->returnToHome();
-                            }
-                        } else {
-                            $this->returnToHome();
-                        }
-                    } else {
-                    }
-                }
-
-                public function returnToHome()
-                {
-                    header('Location: /');
-                    exit;
-                }
-            }
-
-            $personalWeb = new personalWeb();
-            $personalWeb->handleRequestRoute();
+                $personalWeb = new personalWeb();
+                $personalWeb->handleRequestRoute();
